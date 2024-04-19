@@ -56,11 +56,18 @@ exports.book_detail = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  res.render("book_detail", {
+  // res.render("book_detail", {
+  //   title: book.title,
+  //   book: book,
+  //   book_instances: bookInstances,
+  // });
+  res.json({
     title: book.title,
     book: book,
     book_instances: bookInstances,
   });
+  
+
 });
 
 // Display book create form on GET.
