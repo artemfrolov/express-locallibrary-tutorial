@@ -15,12 +15,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{URL}}/book/{{TestBook}}",
+							"raw": "{{URL}}/books/{{TestBook}}",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"book",
+								"books",
 								"{{TestBook}}"
 							]
 						}
@@ -39,6 +39,162 @@
 							],
 							"path": [
 								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Book 000000000\",\r\n    \"author\": \"{{TestAuthorQ}}\",\r\n    \"summary\": \"Some Text\",\r\n    \"isbn\": \"123456789\",\r\n    \"genre\": [\r\n        \"{{TestGenreQ1}}\",\r\n        \"{{TestGenreQ2}}\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/books",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Create Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Book 000000000\",\r\n    \"author\": \"{{TestAuthorQ}}\",\r\n    \"summary\": \"Some Text\",\r\n    \"isbn\": \"123456789\",\r\n    \"genre\": [\r\n        \"65da2223377bf6cb99d981f1\",\r\n        \"65da2223377bf6cb99d981f3\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/books",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/books/65da2226377bf6cb99d98204",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"books",
+								"65da2226377bf6cb99d98204"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"New Book9999999999\",\r\n    \"author\": \"{{TestAuthorQ}}\",\r\n    \"summary\": \"Some Text\",\r\n    \"isbn\": \"123456789333333333333333333\",\r\n    \"genre\": [\"{{TestGenreQ}}\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/books/662d0e37a48057fff082bdcf",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"books",
+								"662d0e37a48057fff082bdcf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Books Update form",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/books/662d0e37a48057ff082bdcf/updateform",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"books",
+								"662d0e37a48057ff082bdcf",
+								"updateform"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Books Create form",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/books/createform",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"books",
+								"createform"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Genre",
+			"item": [
+				{
+					"name": "Genres list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/genres",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"genres"
 							]
 						}
 					},
@@ -76,6 +232,36 @@
 		{
 			"key": "TestBook",
 			"value": "65da2226377bf6cb99d98204",
+			"type": "string"
+		},
+		{
+			"key": "TestGenreQ1",
+			"value": "\"65da2223377bf6cb99d981f1\"",
+			"type": "string"
+		},
+		{
+			"key": "TestGenreQ2",
+			"value": "\"65da2223377bf6cb99d981f3\"",
+			"type": "string"
+		},
+		{
+			"key": "TestGenre",
+			"value": "65da2223377bf6cb99d981f1",
+			"type": "string"
+		},
+		{
+			"key": "TestAuthorQ",
+			"value": "\"65da2225377bf6cb99d981f9\"",
+			"type": "string"
+		},
+		{
+			"key": "TestAuthor",
+			"value": "65da2225377bf6cb99d981f9",
+			"type": "string"
+		},
+		{
+			"key": "TestBookInstance",
+			"value": "65da2227377bf6cb99d9820f",
 			"type": "string"
 		}
 	]

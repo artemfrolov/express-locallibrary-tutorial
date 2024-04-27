@@ -70,7 +70,6 @@ exports.book_create_get = asyncHandler(async (req, res, next) => {
     Author.find().sort({ family_name: 1 }).exec(),
     Genre.find().sort({ name: 1 }).exec(),
   ]);
-console.log("---------------")
   res.json({
     authors: allAuthors,
     genres: allGenres,
@@ -81,6 +80,7 @@ console.log("---------------")
 exports.book_create_post = [
   // Convert the genre to an array.
   (req, res, next) => {
+    console.log(req.body);
     if (!Array.isArray(req.body.genre)) {
       req.body.genre =
         typeof req.body.genre === "undefined" ? [] : [req.body.genre];
@@ -106,6 +106,7 @@ exports.book_create_post = [
   // Process request after validation and sanitization.
 
   asyncHandler(async (req, res, next) => {
+    console.log(req.body);
     // Extract the validation errors from a request.
     const errors = validationResult(req);
     // Create a Book object with escaped and trimmed data.
