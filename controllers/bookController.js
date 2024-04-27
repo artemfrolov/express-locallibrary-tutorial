@@ -21,8 +21,7 @@ exports.index = asyncHandler(async (req, res, next) => {
     Genre.countDocuments({}).exec(),
   ]);
 
-  res.render("index", {
-    title: "Local Library Home",
+  res.json({
     book_count: numBooks,
     book_instance_count: numBookInstances,
     book_instance_available_count: numAvailableBookInstances,
@@ -33,12 +32,13 @@ exports.index = asyncHandler(async (req, res, next) => {
 
 // Display list of all books.
 exports.book_list = asyncHandler(async (req, res, next) => {
-  const allBooks = await Book.find({}, "title author")
+  const allBooks = await Book.find()
     .sort({ title: 1 })
     .populate("author")
+    .populate("genre")
     .exec();
-
-  res.render("book_list", { title: "Book List", book_list: allBooks });
+  // res.render("book_list", { title: "Book List", book_list: allBooks });
+  res.json({ book_list: allBooks });
 });
 
 // Display detail page for a specific book.
@@ -55,14 +55,7 @@ exports.book_detail = asyncHandler(async (req, res, next) => {
     err.status = 404;
     return next(err);
   }
-
-  // res.render("book_detail", {
-  //   title: book.title,
-  //   book: book,
-  //   book_instances: bookInstances,
-  // });
   res.json({
-    title: book.title,
     book: book,
     book_instances: bookInstances,
   });
@@ -77,9 +70,8 @@ exports.book_create_get = asyncHandler(async (req, res, next) => {
     Author.find().sort({ family_name: 1 }).exec(),
     Genre.find().sort({ name: 1 }).exec(),
   ]);
-
-  res.render("book_form", {
-    title: "Create Book",
+console.log("---------------")
+  res.json({
     authors: allAuthors,
     genres: allGenres,
   });
@@ -116,7 +108,6 @@ exports.book_create_post = [
   asyncHandler(async (req, res, next) => {
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-
     // Create a Book object with escaped and trimmed data.
     const book = new Book({
       title: req.body.title,
@@ -128,42 +119,45 @@ exports.book_create_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
-
-      // Get all authors and genres for form.
-      const [allAuthors, allGenres] = await Promise.all([
-        Author.find().sort({ family_name: 1 }).exec(),
-        Genre.find().sort({ name: 1 }).exec(),
-      ]);
-
-      // Mark our selected genres as checked.
-      for (const genre of allGenres) {
-        if (book.genre.includes(genre._id)) {
-          genre.checked = "true";
-        }
-      }
-      res.render("book_form", {
-        title: "Create Book",
-        authors: allAuthors,
-        genres: allGenres,
-        book: book,
+      res.json({
         errors: errors.array(),
+        book: book,
       });
     } else {
       // Data from form is valid. Save book.
-      await book.save();
-      res.redirect(book.url);
+      const success = await book.save();
+      res.json(success);
     }
   }),
 ];
 
-// Display book delete form on GET.
-exports.book_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete GET");
-});
-
 // Handle book delete on POST.
 exports.book_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete POST");
+  // Assume the post has valid id (ie no validation/sanitization).
+  const [book, bookInstances] = await Promise.all([
+    Book.findById(req.params.id).populate("author").populate("genre").exec(),
+    BookInstance.find({ book: req.params.id }).exec(),
+  ]);
+
+  if (book === null) {
+    // No results.
+    const err = new Error("Book not found.");
+    err.status = 404;
+    return next(err);
+
+  }
+
+  if (bookInstances.length > 0) {
+    // Book has book_instances. Render in same way as for GET route.
+    const err = new Error("Delete Bookinstances first.");
+    err.status = 400;
+    return next(err);
+
+  } else {
+    // Book has no BookInstance objects. Delete object and redirect to the list of books.
+    await Book.findByIdAndDelete(req.params.id);
+    res.status(204).end();
+  }
 });
 
 // Display book update form on GET.
@@ -187,8 +181,7 @@ exports.book_update_get = asyncHandler(async (req, res, next) => {
     if (book.genre.includes(genre._id)) genre.checked = "true";
   });
 
-  res.render("book_form", {
-    title: "Update Book",
+  res.json({
     authors: allAuthors,
     genres: allGenres,
     book: book,
@@ -239,32 +232,17 @@ exports.book_update_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/error messages.
-
-      // Get all authors and genres for form
-      const [allAuthors, allGenres] = await Promise.all([
-        Author.find().sort({ family_name: 1 }).exec(),
-        Genre.find().sort({ name: 1 }).exec(),
-      ]);
-
-      // Mark our selected genres as checked.
-      for (const genre of allGenres) {
-        if (book.genre.indexOf(genre._id) > -1) {
-          genre.checked = "true";
-        }
-      }
-      res.render("book_form", {
-        title: "Update Book",
-        authors: allAuthors,
-        genres: allGenres,
-        book: book,
+      res.json({
         errors: errors.array(),
+        book: book,
       });
       return;
     } else {
       // Data from form is valid. Update the record.
-      const updatedBook = await Book.findByIdAndUpdate(req.params.id, book, {});
+      await Book.findByIdAndUpdate(req.params.id, book, {});
+      const updatedBook = await Book.findById(req.params.id);
       // Redirect to book detail page.
-      res.redirect(updatedBook.url);
+      res.json(updatedBook);
     }
   }),
 ];
